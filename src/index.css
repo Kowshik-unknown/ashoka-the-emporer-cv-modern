@@ -1,0 +1,342 @@
+@import "tailwindcss";
+
+@theme {
+  --color-basalt: #0d0b08;
+  --color-char: #15120d;
+  --color-stone: #201a12;
+  --color-slab: #2b2317;
+  --color-seam: #3b2f1e;
+  --color-gold: #e0a83f;
+  --color-goldbright: #f6d489;
+  --color-saffron: #d96f2e;
+  --color-ivory: #f1e6cf;
+  --color-mist: #a99c82;
+  --color-patina: #6f9c8a;
+  --color-ember: #c2542f;
+  --font-display: "Cinzel", "Georgia", serif;
+  --font-body: "Sora", "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", "Courier New", monospace;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--color-basalt);
+  color: var(--color-ivory);
+  font-family: var(--font-body);
+  overflow-x: hidden;
+}
+
+::selection {
+  background: var(--color-gold);
+  color: var(--color-basalt);
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: #12100b;
+}
+::-webkit-scrollbar-thumb {
+  background: #3b2f1e;
+  border-radius: 8px;
+  border: 2px solid #12100b;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #e0a83f;
+}
+
+/* ---------- ambient layers ---------- */
+
+.noise-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+}
+
+.ambient-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(1100px 700px at 12% -8%, rgba(224, 168, 63, 0.13), transparent 60%),
+    radial-gradient(900px 650px at 92% 12%, rgba(111, 156, 138, 0.09), transparent 60%),
+    radial-gradient(1200px 900px at 50% 115%, rgba(217, 111, 46, 0.1), transparent 60%),
+    repeating-linear-gradient(90deg, rgba(241, 230, 207, 0.016) 0 1px, transparent 1px 140px),
+    var(--color-basalt);
+}
+
+/* ---------- stone & engraving ---------- */
+
+.tablet {
+  background:
+    linear-gradient(160deg, rgba(241, 230, 207, 0.05), rgba(241, 230, 207, 0) 40%),
+    linear-gradient(180deg, #241d13, #181309);
+  border: 1px solid #3b2f1e;
+  box-shadow:
+    inset 0 1px 0 rgba(246, 212, 137, 0.08),
+    0 24px 50px -30px rgba(0, 0, 0, 0.9);
+}
+
+.engraved {
+  color: var(--color-gold);
+  text-shadow:
+    0 1px 0 rgba(0, 0, 0, 0.85),
+    0 -1px 0 rgba(246, 212, 137, 0.18);
+}
+
+.ruled {
+  background-image: linear-gradient(90deg, transparent, #3b2f1e 18%, #3b2f1e 82%, transparent);
+  height: 1px;
+}
+
+/* ---------- reveal machinery ---------- */
+
+.reveal {
+  opacity: 0;
+  transform: translateY(34px);
+  transition:
+    opacity 0.9s cubic-bezier(0.19, 1, 0.22, 1),
+    transform 0.9s cubic-bezier(0.19, 1, 0.22, 1);
+}
+.reveal.in-view {
+  opacity: 1;
+  transform: none;
+}
+
+.line-reveal {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.08em;
+}
+.line-reveal-inner {
+  display: block;
+  transform: translateY(115%);
+  transition: transform 1s cubic-bezier(0.19, 1, 0.22, 1);
+}
+.in-view .line-reveal-inner {
+  transform: none;
+}
+
+/* ---------- keyframes ---------- */
+
+@keyframes kf-chakra-spin {
+  from { transform: rotateZ(0deg); }
+  to { transform: rotateZ(360deg); }
+}
+@keyframes kf-chakra-spin-rev {
+  from { transform: rotateZ(360deg); }
+  to { transform: rotateZ(0deg); }
+}
+@keyframes kf-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+}
+@keyframes kf-ember {
+  0% { transform: translate3d(0, 0, 0); opacity: 0; }
+  12% { opacity: 0.85; }
+  85% { opacity: 0.25; }
+  100% { transform: translate3d(var(--drift, 30px), -78vh, 0); opacity: 0; }
+}
+@keyframes kf-marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-33.3333%); }
+}
+@keyframes kf-pulse-glow {
+  0%, 100% { opacity: 0.45; }
+  50% { opacity: 1; }
+}
+@keyframes kf-cue {
+  0%, 100% { transform: translateY(0); opacity: 0.9; }
+  55% { transform: translateY(9px); opacity: 0.3; }
+}
+@keyframes kf-stamp {
+  0% { transform: scale(2.4) rotate(-26deg); opacity: 0; }
+  60% { transform: scale(0.94) rotate(-10deg); opacity: 1; }
+  100% { transform: scale(1) rotate(-12deg); opacity: 1; }
+}
+@keyframes kf-glyph-float {
+  0%, 100% { transform: translateY(0) rotate(var(--tilt, 0deg)); }
+  50% { transform: translateY(-26px) rotate(var(--tilt, 0deg)); }
+}
+@keyframes kf-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ---------- signature components ---------- */
+
+.chakra-tilt {
+  transform: rotateX(58deg) rotateY(-14deg);
+  transform-style: preserve-3d;
+}
+.chakra-spin {
+  animation: kf-chakra-spin 26s linear infinite;
+}
+.chakra-spin-rev {
+  animation: kf-chakra-spin-rev 40s linear infinite;
+}
+
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: kf-marquee 46s linear infinite;
+}
+.marquee:hover .marquee-track {
+  animation-play-state: paused;
+}
+
+.ember {
+  position: absolute;
+  bottom: -2vh;
+  border-radius: 9999px;
+  pointer-events: none;
+  animation: kf-ember linear infinite;
+}
+
+.stamp-in {
+  animation: kf-stamp 0.55s cubic-bezier(0.19, 1, 0.22, 1) both;
+}
+
+.radar-path {
+  stroke-dasharray: 1400;
+  stroke-dashoffset: 1400;
+  transition: stroke-dashoffset 1.8s cubic-bezier(0.4, 0, 0.2, 1) 0.25s;
+}
+.in-view .radar-path {
+  stroke-dashoffset: 0;
+}
+
+.skill-fill {
+  transition: width 1.4s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+/* pillar */
+.pillar-scene {
+  perspective: 1300px;
+}
+.pillar-inner {
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+.pillar-face {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 236px;
+  height: 320px;
+  margin: -160px 0 0 -118px;
+  backface-visibility: hidden;
+  background:
+    radial-gradient(120% 90% at 50% 0%, rgba(246, 212, 137, 0.1), transparent 55%),
+    linear-gradient(180deg, #2d2416 0%, #201a10 55%, #171207 100%);
+  border: 1px solid #4a3b22;
+  border-top-color: #5c4a2a;
+  box-shadow:
+    inset 0 1px 0 rgba(246, 212, 137, 0.14),
+    inset 0 -18px 30px rgba(0, 0, 0, 0.45);
+}
+
+/* nav link underline sweep */
+.nav-link {
+  position: relative;
+}
+.nav-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -4px;
+  height: 1px;
+  width: 100%;
+  background: var(--color-gold);
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.35s cubic-bezier(0.19, 1, 0.22, 1);
+}
+.nav-link:hover::after,
+.nav-link.active::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+/* button sweep */
+.btn-sweep {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+.btn-sweep::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(105deg, var(--color-gold), var(--color-goldbright));
+  transform: translateX(-101%) skewX(-12deg);
+  transition: transform 0.45s cubic-bezier(0.19, 1, 0.22, 1);
+}
+.btn-sweep:hover::before {
+  transform: translateX(0) skewX(0);
+}
+
+.card-lift {
+  transition:
+    transform 0.45s cubic-bezier(0.19, 1, 0.22, 1),
+    border-color 0.45s,
+    box-shadow 0.45s;
+}
+.card-lift:hover {
+  transform: translateY(-6px);
+  border-color: rgba(224, 168, 63, 0.55);
+  box-shadow:
+    0 30px 60px -30px rgba(0, 0, 0, 0.95),
+    0 0 0 1px rgba(224, 168, 63, 0.12),
+    0 0 44px -12px rgba(224, 168, 63, 0.28);
+}
+
+.acc-grid {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+}
+.acc-grid.open {
+  grid-template-rows: 1fr;
+}
+.acc-grid > div {
+  overflow: hidden;
+}
+
+.glyph-float {
+  animation: kf-glyph-float 9s ease-in-out infinite;
+}
+
+/* ---------- reduced motion ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .marquee-track {
+    animation: none;
+  }
+  .reveal,
+  .line-reveal-inner {
+    opacity: 1;
+    transform: none;
+  }
+  .radar-path {
+    stroke-dashoffset: 0;
+  }
+}
